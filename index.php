@@ -1,5 +1,5 @@
 <?php
-$dir = realpath('./uploads';
+$dir = realpath('./uploads');
 $file_list = getFileList($dir);
 
 /*
