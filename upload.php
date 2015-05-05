@@ -1,5 +1,5 @@
 <?php
-$dir = '/home/projects/jQuery-File-Upload/slice/uploads';
+$dir = realpath('./uploads');
 
 if (!isset($_SERVER['HTTP_X_FILE_NAME']))
     throw new Exception('Name required');
