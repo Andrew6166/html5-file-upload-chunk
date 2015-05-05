@@ -1,5 +1,8 @@
-This is an example of HTML5 asynchronous sliced (chunked) file upload (using XmlHttpRequest level 2) with progress bar, that works well on Android 4.0.4 default browser (there's a bug that requires you to send(ArrayBuffer) instead of send(Blob)) and all of the modern HTML5 compatible browsers.
+forked from: https://github.com/mailopl/html5-xhr2-chunked-file-upload-slice/ NO LICENSE
+css from: https://github.com/blueimp/jQuery-File-Upload MIT LICENSE
 
-index.html represents a frontend that slices a file, uploads it's chunks (upload.php) separately and updates progress bar. After uploading last slice, mergeFile() function is executed which requests merge.php.
+Changes:
+Parallel upload -> Serial upload
+Resume
 
-upload.php and merge.php requires that ./uploads directory is created with proper access rights.
+LICENSE: GPLv3
