@@ -14,6 +14,7 @@ Parallel upload -> Serial upload
 Added:
 
 Resume
+MD5 checksum
 
 LICENSE
 =======
