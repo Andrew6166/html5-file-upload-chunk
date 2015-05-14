@@ -29,10 +29,12 @@ file_put_contents($target, $input);
 $input = file_get_contents($target);
 $hash_file = md5($input);
 
+/*
 // errorie proboka
 $r = rand(0,1);
 if($r>0)
 	$hash_file = '1234';
+*/
 
 // hashak berdinak badira ondo egin da igoera
 if($hash===$hash_file)
