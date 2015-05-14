@@ -12,6 +12,8 @@
 					var file_input = inputs[i];
 			}
 		}
+		
+		form.reset();
 
 		form.onsubmit = function(e)
 		{
@@ -155,73 +157,89 @@
 	 * @param end
 	 */
 	function uploadFile(blob, index, start, slicesTotal, callback)
-	{
+	{	
 		var end = start + BYTES_PER_CHUNK;
 		if (end > blob.size)
 			end = blob.size;
 
 		getChunk(blob, start, end, function(zati)
 		{
-			// no-jquery
-			var xhr = new XMLHttpRequest();
-		    xhr.onreadystatechange = function()
-		    {
-		        if(xhr.readyState == 4)
-		        {
-		        	var j = JSON.parse(xhr.response);
-		        	
-		        	var toupload = document.getElementById('toupload');
-		        	var lis = toupload.getElementsByTagName('li');
+			// hash md5
+			var reader = new FileReader();
+			reader.onload = function(event)
+			{
+				var binary = event.target.result;
+				var hash = md5(binary);
 
-		        	for(var i in lis)
-		        	{
-		        		if(typeof lis[i]!='undefined' && typeof lis[i].getAttribute=='function')
-		        		{
-							var data_name = lis[i].getAttribute('data-name'); 
-			        		if(data_name==j['filename'])
-			        		{
-			        			var progress_bar = lis[i].getElementsByTagName('div')[1];
-			        			progress_bar.style.width = j['percent']+"%";
-			        			if(j['percent']==100)
-			        			{
-			        				progress_bar.removeAttribute('style');
-			        				progress_bar.className = 'progress-finished';
-			        				
-			        				var a = document.createElement('a');
-			        				a.setAttribute('href', "uploads/"+lis[i].getAttribute('data-name'));
-			        				a.appendChild(document.createTextNode(lis[i].getAttribute('data-name')));
-			        				
-			        				lis[i].removeAttribute('data-name');
-			        				lis[i].removeChild(lis[i].getElementsByTagName('span')[0]);
-			        				lis[i].removeChild(lis[i].getElementsByTagName('div')[0]);
-			        				lis[i].appendChild(a);
-			        				
-			        				var completed = document.getElementById('completed');
-			        				var ul = completed.getElementsByTagName('ul')[0];
-			        				ul.appendChild(lis[i]);	
-			        			}
-			        		}
-		        		}
-		        	}
-
-					index++;
-					if(index<slicesTotal)
-					{
-						window.setTimeout(function()
-						{
-							uploadFile(blob, index, end, slicesTotal, callback);	
-						}, 100);
-					}
-					else
-						callback();
-		        }
-		    };
-		    xhr.open("post", "upload.php", true);
-		    xhr.setRequestHeader("X-File-Name", blob.name);             // custom header with filename and full size
-			xhr.setRequestHeader("X-File-Size", blob.size);
-			xhr.setRequestHeader("X-Index", index);                     // part identifier
-			xhr.setRequestHeader("X-Total", slicesTotal);
-			xhr.send(zati);
+				var xhr = new XMLHttpRequest();
+			    xhr.onreadystatechange = function()
+			    {
+			        if(xhr.readyState == 4)
+			        {
+			        	var j = JSON.parse(xhr.response);
+			        	
+			        	if(typeof j['error'] !== undefined && j['error']==='E_HASH')
+			        	{
+			        		uploadFile(blob, index, start, slicesTotal, callback);
+			        	}
+			        	else
+			        	{
+				        	var toupload = document.getElementById('toupload');
+				        	var lis = toupload.getElementsByTagName('li');
+			
+				        	for(var i in lis)
+				        	{
+				        		if(typeof lis[i]!='undefined' && typeof lis[i].getAttribute=='function')
+				        		{
+									var data_name = lis[i].getAttribute('data-name'); 
+					        		if(data_name==j['filename'])
+					        		{
+					        			var progress_bar = lis[i].getElementsByTagName('div')[1];
+					        			progress_bar.style.width = j['percent']+"%";
+					        			if(j['percent']==100)
+					        			{
+					        				progress_bar.removeAttribute('style');
+					        				progress_bar.className = 'progress-finished';
+					        				
+					        				var a = document.createElement('a');
+					        				a.setAttribute('href', "uploads/"+lis[i].getAttribute('data-name'));
+					        				a.appendChild(document.createTextNode(lis[i].getAttribute('data-name')));
+					        				
+					        				lis[i].removeAttribute('data-name');
+					        				lis[i].removeChild(lis[i].getElementsByTagName('span')[0]);
+					        				lis[i].removeChild(lis[i].getElementsByTagName('div')[0]);
+					        				lis[i].appendChild(a);
+					        				
+					        				var completed = document.getElementById('completed');
+					        				var ul = completed.getElementsByTagName('ul')[0];
+					        				ul.appendChild(lis[i]);	
+					        			}
+					        		}
+				        		}
+				        	}
+			
+							index++;
+							if(index<slicesTotal)
+							{
+								window.setTimeout(function()
+								{
+									uploadFile(blob, index, end, slicesTotal, callback);	
+								}, 100);
+							}
+							else
+								callback();	
+			        	}
+			        }
+			    };
+			    xhr.open("post", "upload.php", true);
+			    xhr.setRequestHeader("X-File-Name", blob.name);             // custom header with filename and full size
+				//xhr.setRequestHeader("X-File-Size", blob.size);
+				xhr.setRequestHeader("X-Index", index);                     // part identifier
+				xhr.setRequestHeader("X-Total", slicesTotal);
+				xhr.setRequestHeader("X-Hash", hash);
+				xhr.send(zati);
+			};
+			reader.readAsBinaryString(zati);
 		});
 	}
 	

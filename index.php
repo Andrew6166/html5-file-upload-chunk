@@ -77,6 +77,7 @@ function getFileList($dir)
 				}
 			}
 		</style>
+		<script type="text/javascript" src="md5.js"></script>
 		<script type="text/javascript" src="upload.js"></script>
 	</head>
 	<body>
@@ -92,7 +93,10 @@ function getFileList($dir)
 		<div id="incompleted">
 			<h2>incompleted:</h1>
 			<ul>
-			<?php foreach($file_list['incompleted'] as $fl): ?>
+			<?php
+				if(isset($file_list['incompleted'])):
+				foreach($file_list['incompleted'] as $fl):
+			?>
 				<li data-name="<?=$fl['filename']?>" data-start="<?=$fl['start']?>" data-end="<?=$fl['end']?>">
 					<span><?=$fl['filename']?></span>
 					<div class="progress">
@@ -100,15 +104,24 @@ function getFileList($dir)
 						</div>
 					</div>
 				</li>
-			<?php endforeach ?>
+			<?php
+				endforeach;
+				endif;
+			?>
 			</ul>
 		</div>
 		<div id="completed">
 			<h2>completed:</h1>
 			<ul>
-			<?php foreach($file_list['completed'] as $fl): ?>
+			<?php
+			if(isset($file_list['completed'])):
+			foreach($file_list['completed'] as $fl):
+			?>
 				<li><a href="uploads/<?=$fl?>"><?=$fl?></a></li>
-			<?php endforeach ?>
+			<?php
+			endforeach;
+			endif;
+			?>
 			</ul>
 		</div>
 	</body>
