@@ -1,5 +1,6 @@
 (function()
 {
+	var _files_data = [];
 	window.onload = function()
 	{
 		var form = document.getElementsByTagName('form')[0];
@@ -44,8 +45,17 @@
 							var slices = getSlicesCount(files[i]);
 							if(data_name==files[i]['name'] && slices==lis[j].getAttribute('data-end'))
 							{
+								var tmp =
+								{
+									'data-start': lis[j].getAttribute('data-start'),
+									'data-end': lis[j].getAttribute('data-end')
+								};
+								_files_data[i] = tmp;
+								
+/*								
 								files[i]['data-start'] = lis[j].getAttribute('data-start');
 								files[i]['data-end'] = lis[j].getAttribute('data-end');
+*/
 								
 								ul.appendChild(lis[j]);
 								found = true;
@@ -55,8 +65,17 @@
 					
 					if(found===false)
 					{
+						var tmp =
+						{
+							'data-start': 0,
+							'data-end': getSlicesCount(files[i])
+						};
+						_files_data[i] = tmp;						
+						
+/*						
 						files[i]['data-start'] = 0;
 						files[i]['data-end'] = getSlicesCount(files[i]);
+*/
 								
 						var li = document.createElement('li');
 						li.setAttribute('data-name', files[i]['name']);
@@ -101,10 +120,12 @@
 		if(i>=length)
 		{
 			form.reset();
+			_files_data = [];
 			return false;
 		}
-
-		var index = blobs[i]['data-start'];
+		
+		//var index = blobs[i]['data-start'];
+		var index = _files_data[i]['data-start'];
 		if(index>0)
 			index++;
 
@@ -117,7 +138,8 @@
 				start = blobs[i].size;	
 		}
 		
-		uploadFile(blobs[i], index, start, blobs[i]['data-end'], function()
+		//uploadFile(blobs[i], index, start, blobs[i]['data-end'], function()
+		uploadFile(blobs[i], index, start, _files_data[i]['data-end'], function()
 		{
 			i++;
 			async(blobs, i, length, form);
@@ -224,7 +246,7 @@
 								window.setTimeout(function()
 								{
 									uploadFile(blob, index, end, slicesTotal, callback);	
-								}, 100);
+								}, 1000);
 							}
 							else
 								callback();	
