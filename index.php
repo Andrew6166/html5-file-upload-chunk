@@ -77,6 +77,7 @@ function getFileList($dir)
 				}
 			}
 		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>		
 		<script type="text/javascript" src="md5.js"></script>
 		<script type="text/javascript" src="upload.js"></script>
 	</head>
@@ -86,12 +87,12 @@ function getFileList($dir)
 			<input type="submit" />
 		</form>
 		<div id="toupload">
-			<h2>to upload:</h1>
+			<h2>to upload:</h2>
 			<ul>
 			</ul>
 		</div>
 		<div id="incompleted">
-			<h2>incompleted:</h1>
+			<h2>incompleted:</h2>
 			<ul>
 			<?php
 				if(isset($file_list['incompleted'])):
@@ -111,7 +112,7 @@ function getFileList($dir)
 			</ul>
 		</div>
 		<div id="completed">
-			<h2>completed:</h1>
+			<h2>completed:</h2>
 			<ul>
 			<?php
 			if(isset($file_list['completed'])):
