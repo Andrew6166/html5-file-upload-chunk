@@ -7,12 +7,16 @@
 	{
 		form = document.getElementsByTagName('form')[0];
 		var inputs = form.getElementsByTagName('input');
+		console.log(inputs);
 		for(i in inputs)
 		{
-			if(typeof inputs[i].getAttribute=='function')
+			if(typeof inputs[i].nodeName == 'string')
 			{
 				if(inputs[i].getAttribute('type')=='file')
+				{
 					var file_input = inputs[i];
+					break;
+				}
 			}
 		}
 		
