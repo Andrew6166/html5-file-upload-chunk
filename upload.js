@@ -7,10 +7,9 @@
 	{
 		form = document.getElementsByTagName('form')[0];
 		var inputs = form.getElementsByTagName('input');
-		console.log(inputs);
 		for(i in inputs)
 		{
-			if(typeof inputs[i].nodeName == 'string')
+			if(typeof inputs[i] == 'object')
 			{
 				if(inputs[i].getAttribute('type')=='file')
 				{
