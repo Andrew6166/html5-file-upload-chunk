@@ -33,7 +33,7 @@
 
 			var target = e.target ? e.target : e.srcElement;
 			
-			var files = e.target.files;
+			var files = target.files;
 			for(var i in files)
 			{
 				if(typeof files[i]['lastModified']!='undefined')
@@ -167,7 +167,8 @@
 		var f = new FileReader();
 		f.onload = function(e)
 		{
-			callback(e.target.result);
+			var target = e.target ? e.target : e.srcElement;
+			callback(target.result);
 		};
 		f.readAsArrayBuffer(blob);
 	};
