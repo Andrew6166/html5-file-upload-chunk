@@ -1,9 +1,11 @@
 (function()
 {
 	var _files_data = [];
+	var form;
+
 	window.onload = function()
 	{
-		var form = document.getElementsByTagName('form')[0];
+		form = document.getElementsByTagName('form')[0];
 		var inputs = form.getElementsByTagName('input');
 		for(i in inputs)
 		{
@@ -29,6 +31,8 @@
 			while(ul.hasChildNodes())
 				ul.removeChild(ul.firstChild);
 
+			var target = e.target ? e.target : e.srcElement;
+			
 			var files = e.target.files;
 			for(var i in files)
 			{
@@ -101,7 +105,7 @@
 	};
 
 	// 1MB chunk sizes.
-	const BYTES_PER_CHUNK = 1024 * 1024;
+	const BYTES_PER_CHUNK = 1024 * 1024 * 1;
 	
 	function getSlicesCount(blob)
 	{
@@ -109,13 +113,13 @@
 		return slices;
 	}
 
-	function sendRequest(input, form)
+	function sendRequest(input)
 	{
 		var blobs = input.files;
-		async(blobs, 0, blobs.length, form);
+		async(blobs, 0, blobs.length);
 	}
 	
-	function async(blobs, i, length, form)
+	function async(blobs, i, length)
 	{
 		if(i>=length)
 		{
@@ -123,8 +127,7 @@
 			_files_data = [];
 			return false;
 		}
-		
-		//var index = blobs[i]['data-start'];
+
 		var index = _files_data[i]['data-start'];
 		if(index>0)
 			index++;
@@ -137,12 +140,11 @@
 			if (start > blobs[i].size)
 				start = blobs[i].size;	
 		}
-		
-		//uploadFile(blobs[i], index, start, blobs[i]['data-end'], function()
+
 		uploadFile(blobs[i], index, start, _files_data[i]['data-end'], function()
 		{
 			i++;
-			async(blobs, i, length, form);
+			async(blobs, i, length);
 		});
 	}
 
@@ -192,7 +194,83 @@
 			{
 				var binary = event.target.result;
 				var hash = md5(binary);
+				binary = undefined;
+				
+			    $.ajax(
+			    {
+			        url: 'upload.php',
+			        type: 'POST',
+			        dataType: 'json',
+			        headers:
+			        {
+			        	'X-File-Name': blob.name,
+						'X-Index': index,
+						'X-Total': slicesTotal,
+						'X-Hash': hash
+			        },
+			        data: zati,
+			        processData: false,
+			        success: function(response)
+			        {
+			        	var j = response;
+			        	
+			        	if(typeof j['error'] !== undefined && j['error']==='E_HASH')
+			        	{
+			        		uploadFile(blob, index, start, slicesTotal, callback);
+			        	}
+			        	else
+			        	{
+				        	var toupload = document.getElementById('toupload');
+				        	var lis = toupload.getElementsByTagName('li');
+			
+				        	for(var i in lis)
+				        	{
+				        		if(typeof lis[i]!='undefined' && typeof lis[i].getAttribute=='function')
+				        		{
+									var data_name = lis[i].getAttribute('data-name'); 
+					        		if(data_name==j['filename'])
+					        		{
+					        			var progress_bar = lis[i].getElementsByTagName('div')[1];
+					        			progress_bar.style.width = j['percent']+"%";
+					        			if(j['percent']==100)
+					        			{
+					        				progress_bar.removeAttribute('style');
+					        				progress_bar.className = 'progress-finished';
+					        				
+					        				var a = document.createElement('a');
+					        				a.setAttribute('href', "uploads/"+lis[i].getAttribute('data-name'));
+					        				a.appendChild(document.createTextNode(lis[i].getAttribute('data-name')));
+					        				
+					        				lis[i].removeAttribute('data-name');
+					        				lis[i].removeChild(lis[i].getElementsByTagName('span')[0]);
+					        				lis[i].removeChild(lis[i].getElementsByTagName('div')[0]);
+					        				lis[i].appendChild(a);
+					        				
+					        				var completed = document.getElementById('completed');
+					        				var ul = completed.getElementsByTagName('ul')[0];
+					        				ul.appendChild(lis[i]);	
+					        			}
+					        		}
+				        		}
+				        	}
+			
+							index++;
+							if(index<slicesTotal)
+							{
+								window.setTimeout(function()
+								{
+									uploadFile(blob, index, end, slicesTotal, callback);	
+								}, 10);
+							}
+							else
+							{
+								callback();
+							}
+						}
+			        }
+			    });
 
+/*
 				var xhr = new XMLHttpRequest();
 			    xhr.onreadystatechange = function()
 			    {
@@ -246,13 +324,16 @@
 								window.setTimeout(function()
 								{
 									uploadFile(blob, index, end, slicesTotal, callback);	
-								}, 1000);
+								}, 10);
 							}
 							else
-								callback();	
+							{
+								callback();
+							}
 			        	}
 			        }
 			    };
+
 			    xhr.open("post", "upload.php", true);
 			    xhr.setRequestHeader("X-File-Name", blob.name);             // custom header with filename and full size
 				//xhr.setRequestHeader("X-File-Size", blob.size);
@@ -260,6 +341,7 @@
 				xhr.setRequestHeader("X-Total", slicesTotal);
 				xhr.setRequestHeader("X-Hash", hash);
 				xhr.send(zati);
+*/				
 			};
 			reader.readAsBinaryString(zati);
 		});
