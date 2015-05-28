@@ -329,20 +329,34 @@
 	
 			form.onsubmit = function(e)
 			{
-				e.preventDefault();
+				var img = document.createElement('img');
+				img.setAttribute('src', 'loading.gif');
+				img.setAttribute('alt', 'loading');
+
+				this.appendChild(img);
 			};
 			
-			inputs.onchange = function(e)
+			file_input.onchange = function(e)
 			{
-				e.preventDefault();
+				var name = 'File selected';
 				
-				var toupload = document.getElementById('toupload');
-				var ul = toupload.getElementsByTagName('ul')[0];
-				while(ul.hasChildNodes())
-					ul.removeChild(ul.firstChild);
-					
-				var target = e.target ? e.target : e.srcElement;
-				console.log(target.value);
+				if(typeof e !== undefined)
+				{
+					e.preventDefault();
+					var target = e.target ? e.target : e.srcElement;
+					console.log(target);
+					name = target.value || 'File selected';	
+				}
+
+                var toupload = document.getElementById('toupload');
+                var ul = toupload.getElementsByTagName('ul')[0];
+                while(ul.hasChildNodes())
+                        ul.removeChild(ul.firstChild);
+
+                var li = document.createElement('li');
+                li.appendChild(document.createTextNode(name));
+
+                ul.appendChild(li);
 			};
 		};
 	}
