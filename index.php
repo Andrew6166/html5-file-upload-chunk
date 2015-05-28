@@ -1,5 +1,18 @@
 <?php
 $dir = realpath('./uploads');
+
+if($_FILES)
+{
+	$target_file = $dir."/".$_FILES['file']['name'];
+	move_uploaded_file($_FILES['file']['tmp_name'], $target_file);
+
+	// orri berdiñera berbideratu
+	$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' 
+	    || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+	header('Location: '.$protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+	exit();
+}
+
 $file_list = getFileList($dir);
 
 /*
@@ -81,7 +94,7 @@ function getFileList($dir)
 		<script type="text/javascript" src="upload.js"></script>
 	</head>
 	<body>
-		<form action="" method="post">
+		<form action="" method="post" enctype="multipart/form-data">
 			<input type="file" name="file" multiple="multiple"/>
 			<input type="submit" />
 		</form>
