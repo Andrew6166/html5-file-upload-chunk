@@ -11,7 +11,7 @@ Changed:
 
 Parallel upload -> Serial upload
 
-Added: Resume, MD5 checksum, IE11 support
+Added: Resume, MD5 checksum, IE11/IE10 support
 
 LICENSE
 =======
