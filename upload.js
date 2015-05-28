@@ -11,7 +11,7 @@
 	
 	var form;
 	
-	if(!support())
+	if(support())
 	{
 		// 1MB chunk sizes.
 		var BYTES_PER_CHUNK = 1024 * 1024 * 1;
