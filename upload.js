@@ -1,5 +1,8 @@
 (function()
 {
+	// 1MB chunk sizes.
+	var BYTES_PER_CHUNK = 1024 * 1024 * 1;
+	
 	var _files_data = [];
 	var form;
 
@@ -96,9 +99,6 @@
 			} 
 		};
 	};
-
-	// 1MB chunk sizes.
-	const BYTES_PER_CHUNK = 1024 * 1024 * 1;
 	
 	function getSlicesCount(blob)
 	{
