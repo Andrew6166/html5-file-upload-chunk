@@ -309,7 +309,6 @@
 	}
 	else
 	{
-		var form = 
 		window.onload = function()
 		{
 			form = document.getElementsByTagName('form')[0];
