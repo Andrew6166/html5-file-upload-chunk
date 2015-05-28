@@ -39,7 +39,7 @@
 			var files = target.files;
 			for(var i in files)
 			{
-				if(typeof files[i]['lastModified']!='undefined')
+				if(typeof files[i]=='object')
 				{
 					var found = false;
 					var incompleted = document.getElementById('incompleted');
@@ -59,11 +59,6 @@
 								};
 								_files_data[i] = tmp;
 								
-/*								
-								files[i]['data-start'] = lis[j].getAttribute('data-start');
-								files[i]['data-end'] = lis[j].getAttribute('data-end');
-*/
-								
 								ul.appendChild(lis[j]);
 								found = true;
 							}
@@ -77,12 +72,7 @@
 							'data-start': 0,
 							'data-end': getSlicesCount(files[i])
 						};
-						_files_data[i] = tmp;						
-						
-/*						
-						files[i]['data-start'] = 0;
-						files[i]['data-end'] = getSlicesCount(files[i]);
-*/
+						_files_data[i] = tmp;
 								
 						var li = document.createElement('li');
 						li.setAttribute('data-name', files[i]['name']);
@@ -202,87 +192,10 @@
 				var bytes = new Uint8Array(target.result);
 				var length = bytes.byteLength;
 				for (var i = 0; i < length; i++)
-				  binary += String.fromCharCode(bytes[i]);
-			
-				//var binary = target.result;
+					binary += String.fromCharCode(bytes[i]);
+
 				var hash = md5(binary);
 				binary = undefined;
-				
-/*
-			    $.ajax(
-			    {
-			        url: 'upload.php',
-			        type: 'POST',
-			        dataType: 'json',
-			        headers:
-			        {
-			        	'X-File-Name': blob.name,
-						'X-Index': index,
-						'X-Total': slicesTotal,
-						'X-Hash': hash
-			        },
-			        data: zati,
-			        processData: false,
-			        success: function(response)
-			        {
-			        	var j = response;
-			        	
-			        	if(typeof j['error'] !== undefined && j['error']==='E_HASH')
-			        	{
-			        		uploadFile(blob, index, start, slicesTotal, callback);
-			        	}
-			        	else
-			        	{
-				        	var toupload = document.getElementById('toupload');
-				        	var lis = toupload.getElementsByTagName('li');
-			
-				        	for(var i in lis)
-				        	{
-				        		if(typeof lis[i]!='undefined' && typeof lis[i].getAttribute=='function')
-				        		{
-									var data_name = lis[i].getAttribute('data-name'); 
-					        		if(data_name==j['filename'])
-					        		{
-					        			var progress_bar = lis[i].getElementsByTagName('div')[1];
-					        			progress_bar.style.width = j['percent']+"%";
-					        			if(j['percent']==100)
-					        			{
-					        				progress_bar.removeAttribute('style');
-					        				progress_bar.className = 'progress-finished';
-					        				
-					        				var a = document.createElement('a');
-					        				a.setAttribute('href', "uploads/"+lis[i].getAttribute('data-name'));
-					        				a.appendChild(document.createTextNode(lis[i].getAttribute('data-name')));
-					        				
-					        				lis[i].removeAttribute('data-name');
-					        				lis[i].removeChild(lis[i].getElementsByTagName('span')[0]);
-					        				lis[i].removeChild(lis[i].getElementsByTagName('div')[0]);
-					        				lis[i].appendChild(a);
-					        				
-					        				var completed = document.getElementById('completed');
-					        				var ul = completed.getElementsByTagName('ul')[0];
-					        				ul.appendChild(lis[i]);	
-					        			}
-					        		}
-				        		}
-				        	}
-			
-							index++;
-							if(index<slicesTotal)
-							{
-								window.setTimeout(function()
-								{
-									uploadFile(blob, index, end, slicesTotal, callback);	
-								}, 10);
-							}
-							else
-							{
-								callback();
-							}
-						}
-			        }
-			    });
-*/
 
 				var xhr = new XMLHttpRequest();
 			    xhr.onreadystatechange = function()
@@ -296,7 +209,7 @@
 								window.setTimeout(function()
 								{
 									uploadFile(blob, index, start, slicesTotal, callback);
-								}, 1000);
+								}, 100);
 			        	}
 			        	else
 			        	{
@@ -340,25 +253,21 @@
 								window.setTimeout(function()
 								{
 									uploadFile(blob, index, end, slicesTotal, callback);	
-								}, 1000);
+								}, 100);
 							}
 							else
-							{
 								callback();
-							}
 			        	}
 			        }
 			    };
 
 			    xhr.open("post", "upload.php", true);
-			    xhr.setRequestHeader("X-File-Name", blob.name);             // custom header with filename and full size
-				//xhr.setRequestHeader("X-File-Size", blob.size);
-				xhr.setRequestHeader("X-Index", index);                     // part identifier
+			    xhr.setRequestHeader("X-File-Name", blob.name);
+				xhr.setRequestHeader("X-Index", index);
 				xhr.setRequestHeader("X-Total", slicesTotal);
 				xhr.setRequestHeader("X-Hash", hash);		
 				xhr.send(zati);
 			};
-			//reader.readAsBinaryString(zati);
 			reader.readAsArrayBuffer(zati);
 		});
 	}
