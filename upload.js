@@ -194,12 +194,21 @@
 		{
 			// hash md5
 			var reader = new FileReader();
-			reader.onload = function(event)
+			reader.onload = function(e)
 			{
-				var binary = event.target.result;
+				var target = e.target ? e.target : e.srcElement;
+
+				var binary = "";
+				var bytes = new Uint8Array(target.result);
+				var length = bytes.byteLength;
+				for (var i = 0; i < length; i++)
+				  binary += String.fromCharCode(bytes[i]);
+			
+				//var binary = target.result;
 				var hash = md5(binary);
 				binary = undefined;
 				
+/*
 			    $.ajax(
 			    {
 			        url: 'upload.php',
@@ -273,8 +282,8 @@
 						}
 			        }
 			    });
+*/
 
-/*
 				var xhr = new XMLHttpRequest();
 			    xhr.onreadystatechange = function()
 			    {
@@ -284,7 +293,10 @@
 			        	
 			        	if(typeof j['error'] !== undefined && j['error']==='E_HASH')
 			        	{
-			        		uploadFile(blob, index, start, slicesTotal, callback);
+								window.setTimeout(function()
+								{
+									uploadFile(blob, index, start, slicesTotal, callback);
+								}, 1000);
 			        	}
 			        	else
 			        	{
@@ -328,7 +340,7 @@
 								window.setTimeout(function()
 								{
 									uploadFile(blob, index, end, slicesTotal, callback);	
-								}, 10);
+								}, 1000);
 							}
 							else
 							{
@@ -343,11 +355,11 @@
 				//xhr.setRequestHeader("X-File-Size", blob.size);
 				xhr.setRequestHeader("X-Index", index);                     // part identifier
 				xhr.setRequestHeader("X-Total", slicesTotal);
-				xhr.setRequestHeader("X-Hash", hash);
+				xhr.setRequestHeader("X-Hash", hash);		
 				xhr.send(zati);
-*/				
 			};
-			reader.readAsBinaryString(zati);
+			//reader.readAsBinaryString(zati);
+			reader.readAsArrayBuffer(zati);
 		});
 	}
 	
