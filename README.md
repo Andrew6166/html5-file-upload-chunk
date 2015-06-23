@@ -1,4 +1,4 @@
-html5-file-upload-slice
+html5-file-upload-chunk
 =======================
 
 Upload files in 1MB chunks, resume available.
