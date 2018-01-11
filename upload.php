@@ -1,4 +1,12 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Max-Age: 1000");
+header("Access-Control-Allow-Headers: x-requested-with, x-file-name, x-index, x-total, x-hash, Content-Type, origin, authorization, accept, client-security-token");
+/*
+print_r($_SERVER);
+exit();
+*/
 $dir = realpath('./uploads');
 
 if (!isset($_SERVER['HTTP_X_FILE_NAME']))
